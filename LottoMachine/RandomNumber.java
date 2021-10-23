@@ -19,10 +19,19 @@ public class RandomNumber {
     }
 
     void userNum() throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-        for (int i = 0; i < userArr.length; i++) {
-            userArr[i] = Integer.parseInt(st.nextToken());
+        while (true) {
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+                for (int i = 0; i < userArr.length; i++) {
+                    userArr[i] = Integer.parseInt(st.nextToken());
+                }
+                break;
+
+            } catch (Exception e) {
+                System.out.print("입력이 잘못되었습니다\n다시 입력해주세요 : ");
+                continue;
+            }
         }
     }
 
@@ -45,8 +54,8 @@ public class RandomNumber {
 
     void matching(){
         count=0;
-        for(int i=0;i<userArr.length;i++) {
-            if (set.contains(userArr[i])) {
+        for(int i : userArr) {
+            if (set.contains(i)) {
                 count++;
             }
         }
