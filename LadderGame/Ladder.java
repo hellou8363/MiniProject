@@ -8,6 +8,8 @@ import java.util.stream.IntStream;
 public class Ladder {
     private int member;
     private List<List<Integer>> ladder;
+    public final String ANSI_YELLOW = "\u001B[33m";
+    public final String ANSI_RESET = "\u001B[0m";
 
     public Ladder() {
     } // default constructor
@@ -106,6 +108,9 @@ public class Ladder {
             System.out.print(value == 0 ? "    " : value == random ? "\b\b\uD83D\uDCA3" : value);
         });
 
-        System.out.println("\n\uD83D\uDCA3을 받게 된 사람은?? " + random + "번!!");
+        //                                                       text color 변경                 콘솔을 기본값으로
+        System.out.println("\n\uD83D\uDCA3을 받게 된 사람은?? " + ANSI_YELLOW + random + "번!!" + ANSI_RESET);
+
+        ladder.clear(); // 게임이 종료되었으므로 자원 반환
     } // playGame
 } // end class
