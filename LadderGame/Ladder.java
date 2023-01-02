@@ -29,17 +29,26 @@ public class Ladder {
                 for (int column = 0; column < member * 2; column++) {
                     int random = new Random().nextInt(2); // 범위: 0, 1
 
-                    if (row > 1) { // 첫 번째 다리 연결부는 무작위, 두 번째 부터는 이중 연결되지 않게 체크
-                        if (ladder.get(row - 2).get(column) == 1) {
-                            tempList.add(0);
-                            continue;
-                        } // if
+                    // 첫 번째 다리 연결부는 무작위, 두 번째 부터는 이중 연결되지 않게 체크
+                    if (row > 1 && ladder.get(row - 2).get(column) == 1) {
+                        tempList.add(0);
+                        continue;
                     } // if
 
                     tempList.add(random);
                 } // for
 
+                // 연결부로 사용되는 리스트가 ALL 0으로 건널 다리가 없는 것은 아닌지 체크
+                if (isEmptyBridge(tempList)) {
+                    // ALL 0이라면 이전 연결부에서 다리가 이어지지 않은 부분을 하나 찾아서
+                    int index = ladder.get(row - 2).stream().filter(e -> e == 0).findAny().get();
+
+                    // tempList에 넣는다.
+                    tempList.set(index, 1);
+                } // if
+
                 ladder.add(tempList);
+
             } else {
                 // 연결부가 필요없는 열(수직으로 내려가는 선)은 전부 0으로 채운다.
                 ladder.add(IntStream.iterate(0, n -> n)
@@ -48,7 +57,18 @@ public class Ladder {
         } // for
     } // createLadder
 
-    public void showLadder() throws InterruptedException { // 사다리 프린트
+    public boolean isEmptyBridge(List<Integer> tempList) { // 요소가 모두 0이면 true 반환
+        return tempList.stream().allMatch(e -> e == 0);
+    } // isEmptyElement
+
+    public void showLadder() throws InterruptedException { // 사다리를 보여줘!
+        // 사다리를 보여주려면 일단 사다리를 생성해야 함
+        if (ladder == null) { // 사다리 없니?
+            createLadder(); // 그럼 만들어~
+        } // if
+
+        // 만든 사다리를 보여주기 시작
+
         // 인원 수 출력: (예) 1 2 3 4 5 <- 보여주기용
         IntStream.range(1, member + 1).forEach(member -> System.out.print(member + "    "));
         System.out.println();
@@ -71,6 +91,10 @@ public class Ladder {
     } // showLadder
 
     public void playGame() throws InterruptedException {
+        // 게임을 시작하면 랜덤 사다리를 보여준다.
+        showLadder();
+
+        // 보여준 사다리로 결과를 생성한다.
         int[] result = new int[member * 2]; // 결과 저장용 배열
 
         for (int row = 0; row < ladder.size(); row += 2) { // 2씩 증가: 홀수는 연결부
@@ -90,11 +114,15 @@ public class Ladder {
                 } // if
             } // for
 
-            // 도착 위치 저장 => row: 0 2 4 6 8 10 ...
+            // 도착 위치 저장 => row: 0 2 4 6 8 10 ...을 1 2 3 4 5로 변경해서 저장
             result[currentLocation] = (row / 2) + 1;
         } // for
 
-        // 결과 보여주기
+        // 생성된 결과를 결과를 보여주는 메소드에게 전달
+        showResult(result);
+    } // playGame
+
+    public void showResult(int[] result) { // 결과 보여주기
         int random = new Random().nextInt(member) + 1; // 꽝을 뽑기위한 랜덤
 
         Arrays.stream(result).forEach(value -> {
@@ -112,5 +140,5 @@ public class Ladder {
         System.out.println("\n\uD83D\uDCA3을 받게 된 사람은?? " + ANSI_YELLOW + random + "번!!" + ANSI_RESET);
 
         ladder.clear(); // 게임이 종료되었으므로 자원 반환
-    } // playGame
+    } // showResult
 } // end class
