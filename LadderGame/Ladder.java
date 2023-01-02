@@ -40,11 +40,17 @@ public class Ladder {
 
                 // 연결부로 사용되는 리스트가 ALL 0으로 건널 다리가 없는 것은 아닌지 체크
                 if (isEmptyBridge(tempList)) {
-                    // ALL 0이라면 이전 연결부에서 다리가 이어지지 않은 부분을 하나 찾아서
-                    int index = ladder.get(row - 2).stream().filter(e -> e == 0).findAny().get();
 
-                    // tempList에 넣는다.
-                    tempList.set(index, 1);
+                    // ALL 0이라면 이전 연결부에서 다리가 이어지지 않은 부분을 하나 찾아서 1로 변경
+                    if (row == 1) { // 정말 운 나쁘게 첫 연결부가 ALL 0이라면..
+                        // 비교할 값이 없으므로 랜덤으로 하나의 인덱스에 1 저장
+                        tempList.set(new Random().nextInt(member * 2), 1);
+
+                    } else {
+                        // 첫 연결부 리스트가 아니면 이전 값에서 요소가 0인 인덱스 가져와서 사용
+                        int index = ladder.get(row - 2).indexOf(0);
+                        tempList.set(index, 1);
+                    } // if-else
                 } // if
 
                 ladder.add(tempList);
