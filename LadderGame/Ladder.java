@@ -8,8 +8,6 @@ import java.util.stream.IntStream;
 public class Ladder {
     private int member;
     private List<List<Integer>> ladder;
-    public final String ANSI_YELLOW = "\u001B[33m";
-    public final String ANSI_RESET = "\u001B[0m";
 
     public Ladder() {
     } // default constructor
@@ -30,7 +28,7 @@ public class Ladder {
                     int random = new Random().nextInt(2); // 범위: 0, 1
 
                     // 첫 번째 다리 연결부는 무작위, 두 번째 부터는 이중 연결되지 않게 체크
-                    if (row > 1 && ladder.get(row - 2).get(column) == 1) {
+                    if (row > 1 && this.ladder.get(row - 2).get(column) == 1) {
                         tempList.add(0);
                         continue;
                     } // if
@@ -48,16 +46,16 @@ public class Ladder {
 
                     } else {
                         // 첫 연결부 리스트가 아니면 이전 값에서 요소가 0인 인덱스 가져와서 사용
-                        int index = ladder.get(row - 2).indexOf(0);
+                        int index = this.ladder.get(row - 2).indexOf(0);
                         tempList.set(index, 1);
                     } // if-else
                 } // if
 
-                ladder.add(tempList);
+                this.ladder.add(tempList);
 
             } else {
                 // 연결부가 필요없는 열(수직으로 내려가는 선)은 전부 0으로 채운다.
-                ladder.add(IntStream.iterate(0, n -> n)
+                this.ladder.add(IntStream.iterate(0, n -> n)
                         .limit(member * 2).boxed().collect(Collectors.toList()));
             } // if
         } // for
@@ -69,7 +67,7 @@ public class Ladder {
 
     public void showLadder() throws InterruptedException { // 사다리를 보여줘!
         // 사다리를 보여주려면 일단 사다리를 생성해야 함
-        if (ladder == null) { // 사다리 없니?
+        if (this.ladder == null) { // 사다리 없니?
             createLadder(); // 그럼 만들어~
         } // if
 
@@ -82,12 +80,12 @@ public class Ladder {
         System.out.println("|    ".repeat(member)); // 인원 수 만큼 첫 '|' 출력 <- 보기 편하게 추가
 
         // 리스트의 요소 0과 1을 사용자가 보기 편하게 '|'와 '_', 필요없는 부분은 공백 처리
-        for (int i = 0; i < ladder.get(0).size(); i++) {
+        for (int i = 0; i < this.ladder.get(0).size(); i++) {
             Thread.sleep(300);
 
-            for (int j = 0; j < ladder.size(); j++) {
+            for (int j = 0; j < this.ladder.size(); j++) {
                 // 짝수는 수직으로 내려가는 라인으로 '|', 연결 될 다리는 '--', 그외 공백
-                System.out.print(ladder.get(j).get(i) == 0 ? j % 2 == 0 ? "| " : "   " : "__ ");
+                System.out.print(this.ladder.get(j).get(i) == 0 ? j % 2 == 0 ? "| " : "   " : "__ ");
             } // for
 
             System.out.println();
@@ -103,19 +101,21 @@ public class Ladder {
         // 보여준 사다리로 결과를 생성한다.
         int[] result = new int[member * 2]; // 결과 저장용 배열
 
-        for (int row = 0; row < ladder.size(); row += 2) { // 2씩 증가: 홀수는 연결부
+        for (int row = 0; row < this.ladder.size(); row += 2) { // 2씩 증가: 홀수는 연결부
             int currentLocation = row;
 
-            for (int column = 0; column < ladder.get(row).size(); column++) {
+            for (int column = 0; column < this.ladder.get(row).size(); column++) {
 
                 // 현재 위치에서 오른쪽에 다리가 있다면 건넌다.
-                if (ladder.size() - 2 > currentLocation && ladder.get(currentLocation + 1).get(column) == 1) {
+                // ladder.size() - 2: IndexOutOfBoundsException 예외방지!!
+                if (this.ladder.size() - 2 > currentLocation && this.ladder.get(currentLocation + 1).get(column) == 1) {
                     currentLocation += 2;
                     continue;
                 } // if
 
                 // 현재 위치에서 왼쪽에 다리가 있다면 건넌다.
-                if (currentLocation >= 2 && ladder.get(currentLocation - 1).get(column) == 1) {
+                // currentLocation >= 2: IndexOutOfBoundsException 예외방지!!
+                if (currentLocation >= 2 && this.ladder.get(currentLocation - 1).get(column) == 1) {
                     currentLocation -= 2;
                 } // if
             } // for
@@ -129,6 +129,8 @@ public class Ladder {
     } // playGame
 
     public void showResult(int[] result) { // 결과 보여주기
+        String ANSI_YELLOW = "\u001B[33m";
+        String ANSI_RESET = "\u001B[0m";
         int random = new Random().nextInt(member) + 1; // 꽝을 뽑기위한 랜덤
 
         Arrays.stream(result).forEach(value -> {
@@ -145,6 +147,6 @@ public class Ladder {
         //                                                       text color 변경                 콘솔을 기본값으로
         System.out.println("\n\uD83D\uDCA3을 받게 된 사람은?? " + ANSI_YELLOW + random + "번!!" + ANSI_RESET);
 
-        ladder.clear(); // 게임이 종료되었으므로 자원 반환
+        this.ladder.clear(); // 게임이 종료되었으므로 자원 반환
     } // showResult
 } // end class
